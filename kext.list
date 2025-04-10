@@ -1,0 +1,73 @@
+
+### ################## ###
+### Non-optional kexts ###
+### ################## ###
+
+#
+# Patching engine
+#
+acidanthera/Lilu        Lilu-{VERSION}-{VARIANT}
+
+#
+# SMC emulator
+#
+acidanthera/VirtualSMC     VirtualSMC-{VERSION}-{VARIANT} (VirtualSMC, SMCProcessor, SMCSuperIO)
+
+#
+# Graphics patching
+#
+acidanthera/WhateverGreen  WhateverGreen-{VERSION}-{VARIANT}
+
+### ################# ###
+### Recommended kexts ###
+### ################# ###
+
+#
+# Audio codec
+# (specify either ALC or ALCU, see the README for more info)
+#
+acidanthera/AppleALC       AppleALC-{VERSION}-{VARIANT} (AppleALC)
+
+#
+# NVMe power management
+#
+acidanthera/NVMeFix        NVMeFix-{VERSION}-{VARIANT}
+
+#
+# CPU power management
+#
+acidanthera/CPUFriend      CPUFriend-{VERSION}-{VARIANT}
+
+### ##################### ###
+### Device-specific Kexts ###
+### ##################### ###
+
+
+## ######## ##
+## Wireless ##
+## ######## ##
+
+#
+# Intel ethernet
+#
+acidanthera/IntelMausi                    IntelMausi-{VERSION}-{VARIANT}
+
+#
+# Intel Wi-Fi
+#
+OpenIntelWireless/itlwm                   itlwm_{VERSION}_stable.kext
+#
+# or use AirportItlwm (macOS version-dependent)
+#
+#OpenIntelWireless/itlwm                   AirportItlwm_{VERSION}_stable_[your macOS version].kext
+
+#
+# Intel bluetooth
+#
+OpenIntelWireless/IntelBluetoothFirmware  IntelBluetooth-{VERSION} (IntelBluetoothFirmware, IntelBTPatcher)
+#
+# needed for Sequoia bluetooth
+#
+acidanthera/BrcmPatchRAM                  BrcmPatchRAM-{VERSION}-{VARIANT} (BlueToolFixup)
+
+

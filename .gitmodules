@@ -1,0 +1,3 @@
+[submodule "kextdl"]
+	path = kextdl
+	url = https://github.com/h4dynn/kextdl.git

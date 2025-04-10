@@ -1,0 +1,67 @@
+name: Create EFI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  efi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download dependencies
+        run: |
+          sudo apt update
+          sudo apt -y install acpica-tools libarchive-tools
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        submodules: 'true'
+
+      - name: Checkout OpenCore binaries
+        uses: actions/checkout@v4
+        with:
+          repository: 'acidanthera/OcBinaryData'
+          ref: 'master'
+          path: 'OcBinaryData'
+
+      - name: Compile SSDTs
+        run: |
+          cd ACPI
+          for acpiSrc in *.dsl
+          do {
+            iasl ${acpiSrc}
+          }
+          done
+
+      - name: Download kexts
+        run: |
+          chmod +x kextdl/kextdl.command
+          ./kextdl/kextdl.command RELEASE < ./kext.list
+
+      - name: Download OpenCore
+        run: |
+          shopt -s extglob
+          latest=$(curl -w '%{url_effective}' -Lso /dev/null https://github.com/acidanthera/OpenCorePkg/releases/latest | cut -d'/' -f8-)
+          curl -Lso- https://github.com/acidanthera/OpenCorePkg/releases/download/${latest}/OpenCore-${latest}-RELEASE.zip |
+            bsdtar --strip-components=3 -x \
+              X64/EFI/OC/OpenCore.efi \
+              X64/EFI/OC/Drivers/{OpenRuntime,OpenCanopy,ResetNvramEntry}.efi \
+              X64/EFI/OC/Tools/OpenShell.efi
+          mkdir -p Resources/Image/Acidanthera
+          cp OcBinaryData/Drivers/HfsPlus.efi Drivers
+          cp -r OcBinaryData/Resources/{Font,Label} Resources
+          cp -r OcBinaryData/Resources/Image/Acidanthera/GoldenGate Resources/Image/Acidanthera
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p out/EFI/OC
+          cp -r ACPI Drivers Kexts Resources Tools config.plist OpenCore.efi out/EFI/OC
+          cd out/EFI/OC
+          rm -rf ACPI/*.dsl README.md .git .github
+
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "EFI"
+          path: out
